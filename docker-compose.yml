@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:15
+    container_name: uni-jobs-portal-db-1
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+
+  # โปรไฟล์ dev: ให้เพื่อนแก้ UI แล้วเห็นผลทันที
+  app-dev:
+    profiles: ["dev"]
+    image: maven:3.9-eclipse-temurin-17
+    working_dir: /workspace
+    command: mvn -DskipTests spring-boot:run -Dspring-boot.run.profiles=dev
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      APP_SEED_ENABLED: ${APP_SEED_ENABLED}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/workspace
+      - m2:/root/.m2
+
+  # โปรไฟล์ prod: รันด้วย JAR ที่ build จาก Dockerfile
+  app:
+    profiles: ["prod"]
+    build: .
+    image: uni-jobs-portal-app:latest
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      APP_SEED_ENABLED: ${APP_SEED_ENABLED}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:
+  m2:

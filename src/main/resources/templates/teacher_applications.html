@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="th" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><meta charset="UTF-8"><title>ผู้สมัครงาน</title></head>
+<body>
+  <div>
+    <span>เข้าสู่ระบบโดย: <b sec:authentication="name">user</b></span>
+    |
+    <form method="post" action="/logout" th:object="${_csrf}" style="display:inline">
+      <input type="hidden" th:name="*{parameterName}" th:value="*{token}" />
+      <button type="submit">ออกจากระบบ</button>
+    </form>
+    | <a th:href="@{|/teacher/jobs|}">ย้อนกลับ</a>
+  </div>
+
+  <h2>ผู้สมัคร: <span th:text="${job.title}">Job</span></h2>
+  <p th:text="${job.description}">desc</p>
+  <p><b>คำถาม:</b> <span th:text="${job.questionPrompt}">question</span></p>
+
+  <table border="1" cellpadding="6" cellspacing="0">
+    <thead>
+      <tr>
+        <th>ชื่อ - นามสกุล</th><th>รหัส นศ.</th><th>อีเมล</th><th>โทร</th>
+        <th>คำตอบ</th><th>สถานะ</th><th>จัดการ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="a : ${apps}">
+        <td th:text="${a.fullName}">name</td>
+        <td th:text="${a.studentId}">sid</td>
+        <td th:text="${a.email}">email</td>
+        <td th:text="${a.phone}">phone</td>
+        <td th:text="${a.answerText}">answer</td>
+        <td th:text="${a.status}">PENDING</td>
+        <td>
+          <form method="post" th:action="@{|/teacher/applications/${a.id}/approve|}" th:object="${_csrf}" style="display:inline">
+            <input type="hidden" th:name="*{parameterName}" th:value="*{token}" />
+            <button type="submit">ผ่าน</button>
+          </form>
+          <form method="post" th:action="@{|/teacher/applications/${a.id}/reject|}" th:object="${_csrf}" style="display:inline">
+            <input type="hidden" th:name="*{parameterName}" th:value="*{token}" />
+            <button type="submit">ไม่ผ่าน</button>
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>รายชื่อที่ผ่าน</h3>
+  <ul>
+    <li th:each="a : ${apps}" th:if="${a.status.name() == 'APPROVED'}"
+        th:text="${a.fullName + ' (' + a.studentId + ')'}">pass</li>
+  </ul>
+</body></html>

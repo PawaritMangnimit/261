@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>สร้างงานใหม่</title></head>
+<body>
+  <h2>สร้างงานใหม่</h2>
+  <form method="post" action="/teacher/jobs" th:object="${_csrf}">
+    <input type="hidden" th:name="*{parameterName}" th:value="*{token}" />
+    <div>
+      <label>ชื่อเรื่อง</label><br/>
+      <input type="text" name="title" required style="width:420px"/>
+    </div>
+    <div>
+      <label>รายละเอียด</label><br/>
+      <textarea name="description" required style="width:420px;height:120px"></textarea>
+    </div>
+    <div>
+      <label>คำถามให้นักศึกษาตอบ</label><br/>
+      <textarea name="questionPrompt" required style="width:420px;height:80px"></textarea>
+    </div>
+    <button type="submit">บันทึก</button>
+  </form>
+  <p><a href="/teacher/jobs">ย้อนกลับ</a></p>
+</body></html>

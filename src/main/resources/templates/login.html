@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>เข้าสู่ระบบ</title></head>
+<body>
+  <h2>เข้าสู่ระบบ</h2>
+  <form method="post" action="/login" th:object="${_csrf}">
+    <input type="hidden" th:name="*{parameterName}" th:value="*{token}" />
+    <div><label>Username</label><br/><input type="text" name="username" required></div>
+    <div><label>Password</label><br/><input type="password" name="password" required></div>
+    <button type="submit">Sign in</button>
+  </form>
+  <p>ตัวอย่าง: อาจารย์ teacher1@uni.edu / 1234 | นักศึกษา student1@uni.edu / 1234</p>
+</body></html>
